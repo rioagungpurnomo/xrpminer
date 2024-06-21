@@ -46,7 +46,7 @@ You can add multiple accounts or just one, the following example
 ```
 
 #### STEP 3
-then run the following command and let's mine
+Then run the following command and start automatic mining
 ```bash
 python xrpminer.py
 ```
