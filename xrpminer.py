@@ -86,15 +86,15 @@ class Xrpminer:
         'Origin': 'https://faucetearner.org',
       })
       response2 = r.post('https://faucetearner.org/api.php?act=faucet', data={}, proxies=proxy)
-      response3 = r.post('https://faucetearner.org/dashboard.php', proxies=proxy)
-      balance = BeautifulSoup(response3.content, 'html.parser')
-      balance = balance.find_all("b", "fs-4")[0].text.strip()
       if 'congratulations' in str(response2.text).lower():
         try:
           xrp_earn = (str(response2.text).split(' XRP')[0].split('0.')[1])
         except (IndexError):
           xrp_earn = "0.000000"
         self.success(email, xrp_earn)
+        response3 = r.post('https://faucetearner.org/dashboard.php', proxies=proxy)
+        balance = BeautifulSoup(response3.content, 'html.parser')
+        balance = balance.find_all("b", "fs-4")[0].text.strip()
         return({
           "success": "1",
           "key": xrp_earn,
@@ -103,6 +103,9 @@ class Xrpminer:
       elif 'you have already' in str(response2.text).lower():
         xrp_earn = "0.000000"
         self.failed(email, xrp_earn)
+        response3 = r.post('https://faucetearner.org/dashboard.php', proxies=proxy)
+        balance = BeautifulSoup(response3.content, 'html.parser')
+        balance = balance.find_all("b", "fs-4")[0].text.strip()
         return({
           "success": "2",
           "key": xrp_earn,
