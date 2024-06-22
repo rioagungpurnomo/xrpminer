@@ -33,11 +33,11 @@ You can add multiple accounts or just one, the following example
   {
     "email": "account1@gmail.com",
     "password": "abdc"
-  }
+  },
   {
     "email": "account2@gmail.com",
     "password": "abcde"
-  }
+  },
   {
     "email": "account1@gmail.com",
     "password": "abcdef"
