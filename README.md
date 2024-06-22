@@ -8,6 +8,7 @@ Free and multi-account XRP token mining.
 | Random User Agent | ✅ |
 | Proxy | ✅ |
 | Multi-account | ✅ |
+| Auto Withdrawal | ✅ |
 
 ### Tutorial
 #### STEP 1
@@ -46,6 +47,16 @@ You can add multiple accounts or just one, the following example
 ```
 
 #### STEP 3
+Next, set up the wallet.json file and complete it. You can activate and deactivate automatic withdrawals by changing the auto key to false, Automatic withdrawals every time your balance reaches 1 XRP or more will be sent directly to your XRP wallet address.
+```json
+{
+  "auto": true,
+  "address": "",
+  "destination_tag": ""
+}
+```
+
+#### STEP 4
 Then run the following command and start automatic mining
 ```bash
 python xrpminer.py
