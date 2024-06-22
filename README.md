@@ -47,7 +47,7 @@ You can add multiple accounts or just one, the following example
 ```
 
 #### STEP 3
-Next, set up the wallet.json file and complete it. You can activate and deactivate automatic withdrawals by changing the auto key to false, Automatic withdrawals every time your balance reaches 1 XRP or more will be sent directly to your XRP wallet address.
+Next, edit the contents of the wallet.json file and enter the XRP wallet address and Destination Tag. You can activate and deactivate automatic withdrawals by changing the auto key to false, Automatic withdrawals every time your balance reaches 1 XRP or more will be sent directly to your XRP wallet address.
 ```json
 {
   "auto": true,
