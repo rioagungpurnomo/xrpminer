@@ -204,7 +204,7 @@ class Xrpminer:
 [bold white]Balance : {balance}[/]
 [bold white]Success : {self.count_sc(email)}[/]
 [bold white]Failed : {self.count_fl(email)}[/]
-[bold white]Claim/Min : 0.{execut["key"]} XRP[/]
+[bold white]Claim : 0.{execut["key"]} XRP[/]
 [bold white]Status :[/] [bold green]Failed[/]""", style="bold bright_black", width=56, title=f">>> [bold red]{email}[/] <<<"))
           else:
             print(Panel(f"""
