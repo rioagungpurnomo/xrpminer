@@ -44,7 +44,6 @@ class Xrpminer:
     if wallet["auto"]:
       validate = session.get("https://faucetearner.org/withdraw.php")
       validate = BeautifulSoup(validate.content, 'html.parser')
-      wdtime = validate.find("p", "mb-2 text-center").text.strip().split("Server Time: ")[1].replace('.', '')
       amount = validate.find("input", {"id": "withdraw_amount"})["value"]
       if int(amount.replace('.', '')) > 1000000:
         validate = validate.find_all("script")[-1].text.strip().split('formData.validate="')[1].split('"')[0]
@@ -56,10 +55,16 @@ class Xrpminer:
           "validate": validate
         }
         session.headers.update({
-          'Accept': 'application/json',
+          'Accept': 'application/json, text/javascript, */*; q=0.01',
+          'Content-Type': 'application/json',
+          'Sec-Fetch-Dest': 'empty',
+          'Sec-Fetch-Site': 'same-origin',
+          'Sec-Fetch-Mode': 'cors',
+          'Host': 'faucetearner.org',
+          'Origin': 'https://faucetearner.org',
           'User-Agent': UserAgent().random
         })
-        response = session.post('https://faucetearner.org/api.php?act=withdraw', data=data)
+        response = session.post('https://faucetearner.org/api.php?act=withdraw', json=data)
         return response.content
         
   def count_time(self):
@@ -157,47 +162,63 @@ class Xrpminer:
       proxies = {'http':  choice(proxies)}
       session = requests.Session()
       session.headers.update({
-        'Accept': 'application/json',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Content-Type': 'application/json',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'cors',
+        'Host': 'faucetearner.org',
+        'Origin': 'https://faucetearner.org',
         'User-Agent': user_agent
       })
-      session.post("https://faucetearner.org/api.php?act=login", json={
+      response = session.post("https://faucetearner.org/api.php?act=login", json={
         "email": email,
         "password": account['password']
       }, proxies=proxies)
-      cookies.append({
-        "email": email
-      })
-      success.append({
-        "email": email,
-        "data": []
-      })
-      failed.append({
-        "email": email,
-        "data": []
-      })
-      execut = self.execution(email, session)
-      self.autowd(session)
-      balance = execut["balance"]
-      if execut["success"] == "1":
-        print(Panel(f"""
+      is_login = response.cookies.get_dict()
+      if is_login:
+        if is_login["login"]:
+          cookies.append({
+            "email": email
+          })
+          success.append({
+            "email": email,
+            "data": []
+          })
+          failed.append({
+            "email": email,
+            "data": []
+          })
+          execut = self.execution(email, session)
+          self.autowd(session)
+          balance = execut["balance"]
+          if execut["success"] == "1":
+            print(Panel(f"""
 [bold white]Balance : {balance}[/]
 [bold white]Success : {self.count_sc(email)}[/]
 [bold white]Failed : {self.count_fl(email)}[/]
-[bold white]Claim/Min : 0.{execut["key"]} XRP[/]
+[bold white]Claim : 0.{execut["key"]} XRP[/]
 [bold white]Status :[/] [bold green]Success[/]""", style="bold bright_black", width=56, title=f">>> [bold green]{email}[/] <<<"))
-      elif execut["success"] == "2":
-        print(Panel(f"""
+          elif execut["success"] == "2":
+            print(Panel(f"""
 [bold white]Balance : {balance}[/]
 [bold white]Success : {self.count_sc(email)}[/]
 [bold white]Failed : {self.count_fl(email)}[/]
 [bold white]Claim/Min : 0.{execut["key"]} XRP[/]
 [bold white]Status :[/] [bold green]Failed[/]""", style="bold bright_black", width=56, title=f">>> [bold red]{email}[/] <<<"))
-      else:
-        print(Panel(f"""
+          else:
+            print(Panel(f"""
 [bold white]Balance : - XRP[/]
 [bold white]Success : -[/]
 [bold white]Failed : -[/]
-[bold white]Claim/Min : - XRP[/]
+[bold white]Claim : - XRP[/]
+[bold white]Status :[/] [bold red]Error[/]""", style="bold bright_black", width=56, title=f">>> [bold red]{email}[/] <<<"))
+      else:
+        print(Panel(f"""
+[bold white]Balance : -[/]
+[bold white]Success : -[/]
+[bold white]Failed : -[/]
+[bold white]Claim : -[/]
 [bold white]Status :[/] [bold red]Error[/]""", style="bold bright_black", width=56, title=f">>> [bold red]{email}[/] <<<"))
     self.count_time()
 
