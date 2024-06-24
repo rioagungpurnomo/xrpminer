@@ -11,13 +11,43 @@ try:
 except (Exception) as e:
   exit(f"[Error]{str(e).capitalize()}!")
 
-cookies, success, failed = [], [], []
-
-url_proxies = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt"
+cookies, success, failed, proxy = [], [], [], []
 
 class Xrpminer:
   def __init__(self) -> None:
     pass
+  
+  def logo(self):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    getIp = requests.get("https://api.myip.com").json()
+    ip = getIp["ip"]
+    print(Panel(f"""[bold red]●[bold yellow] ●[bold green] ●[/]
+[bold green]
+  __  ______  ____  __  __ _                 
+  \ \/ /  _ \|  _ \|  \/  (_)_ __   ___ _ __ 
+   \  /| |_) | |_) | |\/| | | '_ \ / _ \ '__|
+   /  \|  _ <|  __/| |  | | | | | |  __/ |   
+  /_/\_\_| \_\_|   |_|  |_|_|_| |_|\___|_|   
+
+          [italic white on red]You IP : {ip}""", style="bold bright_black", width=56))
+  
+  def getproxy(self):
+    with open('proxy.json') as prohtttp:
+      datahttp = json.load(prohtttp)
+    for dhttp in datahttp:
+      proxies_response = requests.get(dhttp)
+      proxies = proxies_response.text.split('\n')
+      proxies = [proxy.strip() for proxy in proxies if proxy.strip()]
+      for ddh in proxies:
+        proxy.append(ddh)
+    print("[bold bright_black]   ╰─>[bold green] Proxy updated successfully!", end='\r')
+    time.sleep(3)
+
+  def proxy(self):
+    proxies = {
+      "http": "http://" + choice(proxy).replace('http://', '')
+    }
+    return proxies
   
   def success(self, email, data):
     for item in success:
@@ -42,7 +72,14 @@ class Xrpminer:
     with open('wallet.json') as w:
       wallet = json.load(w)
     if wallet["auto"]:
-      validate = session.get("https://faucetearner.org/withdraw.php")
+      session.headers.update({
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'cors',
+        'Host': 'faucetearner.org',
+        'Origin': 'https://faucetearner.org',
+      })
+      validate = session.get("https://faucetearner.org/withdraw.php", proxies=self.proxy())
       validate = BeautifulSoup(validate.content, 'html.parser')
       amount = validate.find("input", {"id": "withdraw_amount"})["value"]
       if int(amount.replace('.', '')) > 1000000:
@@ -64,7 +101,7 @@ class Xrpminer:
           'Origin': 'https://faucetearner.org',
           'User-Agent': UserAgent().random
         })
-        response = session.post('https://faucetearner.org/api.php?act=withdraw', json=data)
+        response = session.post('https://faucetearner.org/api.php?act=withdraw', json=data, proxies=self.proxy())
         return response.content
         
   def count_time(self):
@@ -86,10 +123,6 @@ class Xrpminer:
   def execution(self, email, reqsesion):
     with reqsesion as r:
       user_agent = UserAgent().random
-      proxies_response = requests.get(url_proxies)
-      proxies = proxies_response.text.split('\n')
-      proxies = [proxy.strip() for proxy in proxies if proxy.strip()]
-      proxy = {'http':  choice(proxies)}
       r.headers.update({
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'Accept-Encoding': 'gzip, deflate',
@@ -105,7 +138,7 @@ class Xrpminer:
         'Referer': 'https://faucetearner.org/dashboard.php',
         'Host': 'faucetearner.org',
       })
-      response = r.get('https://faucetearner.org/faucet.php', proxies=proxy)
+      response = r.get('https://faucetearner.org/faucet.php', proxies=self.proxy())
       r.headers.update({
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Content-Type': 'application/json',
@@ -115,14 +148,21 @@ class Xrpminer:
         'Host': 'faucetearner.org',
         'Origin': 'https://faucetearner.org',
       })
-      response2 = r.post('https://faucetearner.org/api.php?act=faucet', data={}, proxies=proxy)
+      response2 = r.post('https://faucetearner.org/api.php?act=faucet', data={}, proxies=self.proxy())
       if 'congratulations' in str(response2.text).lower():
         try:
           xrp_earn = (str(response2.text).split(' XRP')[0].split('0.')[1])
         except (IndexError):
           xrp_earn = "0.000000"
         self.success(email, xrp_earn)
-        response3 = r.get('https://faucetearner.org/dashboard.php', proxies=proxy)
+        r.headers.update({
+          'Sec-Fetch-Dest': 'empty',
+          'Sec-Fetch-Site': 'same-origin',
+          'Sec-Fetch-Mode': 'cors',
+          'Host': 'faucetearner.org',
+          'Origin': 'https://faucetearner.org',
+        })
+        response3 = r.get('https://faucetearner.org/dashboard.php', proxies=self.proxy())
         balance = BeautifulSoup(response3.content, 'html.parser')
         balance = balance.find_all("b", "fs-4")[0].text.strip()
         return({
@@ -133,7 +173,14 @@ class Xrpminer:
       elif 'you have already' in str(response2.text).lower():
         xrp_earn = "0.000000"
         self.failed(email, xrp_earn)
-        response3 = r.get('https://faucetearner.org/dashboard.php', proxies=proxy)
+        r.headers.update({
+          'Sec-Fetch-Dest': 'empty',
+          'Sec-Fetch-Site': 'same-origin',
+          'Sec-Fetch-Mode': 'cors',
+          'Host': 'faucetearner.org',
+          'Origin': 'https://faucetearner.org',
+        })
+        response3 = r.get('https://faucetearner.org/dashboard.php', proxies=self.proxy())
         balance = BeautifulSoup(response3.content, 'html.parser')
         balance = balance.find_all("b", "fs-4")[0].text.strip()
         return({
@@ -154,12 +201,7 @@ class Xrpminer:
         
     for account in data:
       email = account['email']
-      url_proxies = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt"
       user_agent = UserAgent().random
-      proxies_response = requests.get(url_proxies)
-      proxies = proxies_response.text.split('\n')
-      proxies = [proxy.strip() for proxy in proxies if proxy.strip()]
-      proxies = {'http':  choice(proxies)}
       session = requests.Session()
       session.headers.update({
         'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -174,7 +216,7 @@ class Xrpminer:
       response = session.post("https://faucetearner.org/api.php?act=login", json={
         "email": email,
         "password": account['password']
-      }, proxies=proxies)
+      }, proxies=self.proxy())
       is_login = response.cookies.get_dict()
       if is_login:
         if is_login["login"]:
@@ -240,19 +282,11 @@ class Xrpminer:
       exit()
 
 if __name__ == '__main__':
-  os.system('cls' if os.name == 'nt' else 'clear')
-  getIp = requests.get("https://api.myip.com").json()
-  ip = getIp["ip"]
-  print(Panel(f"""[bold red]●[bold yellow] ●[bold green] ●[/]
-[bold green]
-  __  ______  ____  __  __ _                 
-  \ \/ /  _ \|  _ \|  \/  (_)_ __   ___ _ __ 
-   \  /| |_) | |_) | |\/| | | '_ \ / _ \ '__|
-   /  \|  _ <|  __/| |  | | | | | |  __/ |   
-  /_/\_\_| \_\_|   |_|  |_|_|_| |_|\___|_|   
-
-          [italic white on red]You IP : {ip}""", style="bold bright_black", width=56))
   try:
+    Xrpminer().logo()
+    print(Panel(f"[italic blue]Currently updating proxy, please wait...", style="bold bright_black", width=56, title=">>> Update Proxy <<<"))
+    Xrpminer().getproxy()
+    Xrpminer().logo()
     Xrpminer().run()
   except (KeyboardInterrupt, KeyboardInterrupt):
     exit()
