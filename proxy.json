@@ -6,5 +6,6 @@
     "https://raw.githubusercontent.com/Anonym0usWork1221/Free-Proxies/main/proxy_files/http_proxies.txt",
     "https://raw.githubusercontent.com/vakhov/fresh-proxy-list/master/http.txt",
     "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all",
-    "https://raw.githubusercontent.com/officialputuid/KangProxy/KangProxy/http/http.txt"
+    "https://raw.githubusercontent.com/officialputuid/KangProxy/KangProxy/http/http.txt",
+    "https://rcloak.com/api/proxies/raw?protocol=http"
 ]
